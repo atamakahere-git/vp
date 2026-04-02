@@ -281,6 +281,14 @@ fn convert(source: &Path, dest: &Path) -> std::io::Result<()> {
             }
         }
         ServerFormat::Vanilla => {
+            let old = source.join("papercfg.old");
+            if old.is_dir() {
+                println!("  Found papercfg.old/, restoring Paper-specific files...");
+                copy_files(&old, dest, PAPER_FILES)?;
+                for dir in PAPER_DIRS {
+                    copy_dir_if_exists(&old.join(dir), &dest.join(dir), dir)?;
+                }
+            }
             copy_files(source, dest, PAPER_FILES)?;
             for dir in PAPER_DIRS {
                 copy_dir_if_exists(&source.join(dir), &dest.join(dir), dir)?;
